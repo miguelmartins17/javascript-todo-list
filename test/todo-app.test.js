@@ -29,3 +29,12 @@ test('`ADD` a new todo item to model.todos Array via `update`', function (t) {
   t.deepEqual(updated_model.todos[0], expected, "Todo list item added.");
   t.end();
 });
+test('`TOGGLE` a todo item from done=false to done=true', function (t) {
+  const model = JSON.parse(JSON.stringify(app.model)); // initial state
+  const model_with_todo = app.update('ADD', model, "Toggle a todo list item");
+  const item = model_with_todo.todos[0];
+  const model_todo_done = app.update('TOGGLE', model_with_todo, item.id);
+  const expected = { id: 1, title: "Toggle a todo list item", done: true };
+  t.deepEqual(model_todo_done.todos[0], expected, "Todo list item Toggled.");
+  t.end();
+});
