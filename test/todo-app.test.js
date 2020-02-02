@@ -38,3 +38,22 @@ test('`TOGGLE` a todo item from done=false to done=true', function (t) {
   t.deepEqual(model_todo_done.todos[0], expected, "Todo list item Toggled.");
   t.end();
 });
+test.only('render_item HTML for a single Todo Item', function (t) {
+  const model = {
+    todos: [
+      { id: 1, title: "Learn Elm Architecture", done: true },
+    ],
+    hash: '#/' // the "route" to display
+  };
+  // render the ONE todo list item:
+  document.getElementById(id).appendChild(app.render_item(model.todos[0]))
+
+  const done = document.querySelectorAll('.completed')[0].textContent;
+  t.equal(done, 'Learn Elm Architecture', 'Done: Learn "TEA"');
+
+  const checked = document.querySelectorAll('input')[0].checked;
+  t.equal(checked, true, 'Done: ' + model.todos[0].title + " is done=true");
+
+  elmish.empty(document.getElementById(id)); // clear DOM ready for next test
+  t.end();
+});
