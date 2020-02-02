@@ -57,3 +57,28 @@ test.only('render_item HTML for a single Todo Item', function (t) {
   elmish.empty(document.getElementById(id)); // clear DOM ready for next test
   t.end();
 });
+test('render "main" view using (elmish) HTML DOM functions', function (t) {
+  const model = {
+    todos: [
+      { id: 1, title: "Learn Elm Architecture", done: true },
+      { id: 2, title: "Build Todo List App",    done: false },
+      { id: 3, title: "Win the Internet!",      done: false }
+    ],
+    hash: '#/' // the "route" to display
+  };
+  // render the "main" view and append it to the DOM inside the `test-app` node:
+  document.getElementById(id).appendChild(app.render_main(model));
+  // test that the title text in the model.todos was rendered to <label> nodes:
+  document.querySelectorAll('.view').forEach(function (item, index) {
+    t.equal(item.textContent, model.todos[index].title,
+      "index #" + index + " <label> text: " + item.textContent)
+  })
+
+  const inputs = document.querySelectorAll('input'); // todo items are 1,2,3
+  [true, false, false].forEach(function(state, index){
+    t.equal(inputs[index + 1].checked, state,
+      "Todo #" + index + " is done=" + state)
+  })
+  elmish.empty(document.getElementById(id)); // clear DOM ready for next test
+  t.end();
+});
