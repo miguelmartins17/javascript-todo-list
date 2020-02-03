@@ -99,3 +99,16 @@ test.only('view renders the whole todo app using "partials"', function (t) {
   elmish.empty(document.getElementById(id)); // clear DOM ready for next test
   t.end();
 });
+test.only('1. No Todos, should hide #footer and #main', function (t) {
+  // render the view and append it to the DOM inside the `test-app` node:
+  document.getElementById(id).appendChild(app.view({todos: []})); // No Todos
+
+  const main_display = window.getComputedStyle(document.getElementById('main'));
+  t.equal('none', main_display._values.display, "No Todos, hide #main");
+
+  const main_footer= window.getComputedStyle(document.getElementById('footer'));
+  t.equal('none', main_footer._values.display, "No Todos, hide #footer");
+
+  elmish.empty(document.getElementById(id)); // clear DOM ready for next test
+  t.end();
+});
