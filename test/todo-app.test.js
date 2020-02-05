@@ -162,3 +162,61 @@ test('2. New Todo, should allow me to add todo items', function (t) {
   localStorage.removeItem('elmish_store'); // clear "localStorage" for next test
   t.end();
 });
+test.only('3. Mark all as completed ("TOGGLE_ALL")', function (t) {
+  elmish.empty(document.getElementById(id));
+  localStorage.removeItem('elmish_' + id);
+  const model = {
+    todos: [
+      { id: 0, title: "Learn Elm Architecture", done: true },
+      { id: 1, title: "Build Todo List App",    done: false },
+      { id: 2, title: "Win the Internet!",      done: false }
+    ],
+    hash: '#/' // the "route" to display
+  };
+  // render the view and append it to the DOM inside the `test-app` node:
+  elmish.mount(model, app.update, app.view, id, app.subscriptions);
+  // confirm that the ONLY the first todo item is done=true:
+  const items = document.querySelectorAll('.view');
+
+  document.querySelectorAll('.toggle').forEach(function(item, index) {
+    t.equal(item.checked, model.todos[index].done,
+      "Todo #" + index + " is done=" + item.checked
+      + " text: " + items[index].textContent)
+  })
+
+  // click the toggle-all checkbox to trigger TOGGLE_ALL: >> true
+  document.getElementById('toggle-all').click(); // click toggle-all checkbox
+  document.querySelectorAll('.toggle').forEach(function(item, index) {
+    t.equal(item.checked, true,
+      "TOGGLE each Todo #" + index + " is done=" + item.checked
+      + " text: " + items[index].textContent)
+  });
+  t.equal(document.getElementById('toggle-all').checked, true,
+    "should allow me to mark all items as completed")
+
+
+  // click the toggle-all checkbox to TOGGLE_ALL (again!) true >> false
+  document.getElementById('toggle-all').click(); // click toggle-all checkbox
+  document.querySelectorAll('.toggle').forEach(function(item, index) {
+    t.equal(item.checked, false,
+      "TOGGLE_ALL Todo #" + index + " is done=" + item.checked
+      + " text: " + items[index].textContent)
+  })
+  t.equal(document.getElementById('toggle-all').checked, false,
+    "should allow me to clear the completion state of all items")
+
+  // *manually* "click" each todo item:
+  document.querySelectorAll('.toggle').forEach(function(item, index) {
+    item.click(); // this should "toggle" the todo checkbox to done=true
+    t.equal(item.checked, true,
+      ".toggle.click() (each) Todo #" + index + " which is done=" + item.checked
+      + " text: " + items[index].textContent)
+  });
+  // the toggle-all checkbox should be "checked" as all todos are done=true!
+  t.equal(document.getElementById('toggle-all').checked, true,
+    "complete all checkbox should update state when items are completed")
+
+  elmish.empty(document.getElementById(id)); // clear DOM ready for next test
+  localStorage.removeItem('elmish_store');
+  t.end();
+});
