@@ -375,3 +375,32 @@ function render_item (item, model, signal) {
     ] : [])) // </li>
   )
 }
+test('5.1 Editing: > Render an item in "editing mode"', function (t) {
+  elmish.empty(document.getElementById(id));
+  localStorage.removeItem('todos-elmish_' + id);
+  const model = {
+    todos: [
+      { id: 0, title: "Make something people want.", done: false },
+      { id: 1, title: "Bootstrap for as long as you can", done: false },
+      { id: 2, title: "Let's solve our own problem", done: false }
+    ],
+    hash: '#/', // the "route" to display
+    editing: 2 // edit the 3rd todo list item (which has id == 2)
+  };
+  // render the ONE todo list item in "editing mode" based on model.editing:
+  document.getElementById(id).appendChild(
+    app.render_item(model.todos[2], model, mock_signal),
+  );
+  // test that signal (in case of the test mock_signal) is onclick attribute:
+  t.equal(document.querySelectorAll('.view > label')[0].onclick.toString(),
+    mock_signal().toString(), "mock_signal is onclick attribute of label");
+
+  // test that the <li class="editing"> and <input class="edit"> was rendered:
+  t.equal(document.querySelectorAll('.editing').length, 1,
+    "<li class='editing'> element is visible");
+  t.equal(document.querySelectorAll('.edit').length, 1,
+    "<input class='edit'> element is visible");
+  t.equal(document.querySelectorAll('.edit')[0].value, model.todos[2].title,
+    "<input class='edit'> has value: " + model.todos[2].title);
+  t.end();
+});
