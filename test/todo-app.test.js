@@ -544,6 +544,7 @@ test('6. Counter > should display the current number of todo items',
   localStorage.removeItem('todos-elmish_' + id);
   t.end();
 });
+
 test('7. Clear Completed > should display the number of completed items',
   function (t) {
   elmish.empty(document.getElementById(id));
@@ -580,6 +581,25 @@ test('7. Clear Completed > should display the number of completed items',
   t.equal(document.querySelectorAll('clear-completed').length, 0,
     'no clear-completed button when there are no done items.')
   
+  elmish.empty(document.getElementById(id)); // clear DOM ready for next test
+  localStorage.removeItem('todos-elmish_' + id);
+  t.end();
+});
+test.only('8. Persistence > should persist its data', function (t) {
+  elmish.empty(document.getElementById(id));
+  const model = {
+    todos: [
+      { id: 0, title: "Make something people want.", done: false }
+    ],
+    hash: '#/'
+  };
+  // render the view and append it to the DOM inside the `test-app` node:
+  elmish.mount(model, app.update, app.view, id, app.subscriptions);
+  // confirm that the model is saved to localStorage
+  console.log('localStorage', localStorage.getItem('todos-elmish_' + id));
+  t.equal(localStorage.getItem('todos-elmish_' + id),
+    JSON.stringify(model), "data is persisted to localStorage");
+
   elmish.empty(document.getElementById(id)); // clear DOM ready for next test
   localStorage.removeItem('todos-elmish_' + id);
   t.end();
