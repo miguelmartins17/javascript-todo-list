@@ -349,3 +349,29 @@ test.only('5. Editing: > Render an item in "editing mode"', function (t) {
     "<input class='edit'> has value: " + model.todos[2].title);
   t.end();
 });
+function render_item (item, model, signal) {
+  return (
+    li([
+      "data-id=" + item.id,
+      "id=" + item.id,
+      item.done ? "class=completed" : "",
+      model && model.editing && model.editing === item.id ? "class=editing" : ""
+    ], [
+      div(["class=view"], [
+        input([
+          item.done ? "checked=true" : "",
+          "class=toggle",
+          "type=checkbox",
+          typeof signal === 'function' ? signal('TOGGLE', item.id) : ''
+          ], []), // <input> does not have any nested elements
+        label([ typeof signal === 'function' ? signal('EDIT', item.id) : '' ],
+          [text(item.title)]),
+        button(["class=destroy",
+          typeof signal === 'function' ? signal('DELETE', item.id) : ''])
+        ]
+      ), // </div>
+    ].concat(model && model.editing && model.editing === item.id ? [ // editing?
+      input(["class=edit", "id=" + item.id, "value=" + item.title, "autofocus"])
+    ] : [])) // </li>
+  )
+}
