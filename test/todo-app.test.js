@@ -220,3 +220,46 @@ test.only('3. Mark all as completed ("TOGGLE_ALL")', function (t) {
   localStorage.removeItem('elmish_store');
   t.end();
 });
+var all_done = new_model.todos.filter(function(item) {
+        return item.done === false; // only care about items that are NOT done
+      }).length;
+      new_model.all_done = all_done === 0 ? true : false;
+      break;
+    case 'TOGGLE_ALL':
+      new_model.all_done = new_model.all_done ? false : true;
+      new_model.todos.forEach(function (item) { // takes 1ms on a "slow mobile"
+        item.done = new_model.all_done;
+      });
+      break;
+    case 'DELETE':
+      // console.log('DELETE', data);
+      new_model.todos = new_model.todos.filter(function (item) {
+        return item.id !== data;
+      });
+      break;
+    case 'EDIT':
+      // this code is inspired by: https://stackoverflow.com/a/16033129/1148249
+      // simplified as we are not altering the DOM!
+      if (new_model.clicked && new_model.clicked === data &&
+        Date.now() - 300 < new_model.click_time ) { // DOUBLE-CLICK < 300ms
+          new_model.editing = data;
+          // console.log('DOUBLE-CLICK', "item.id=", data,
+          //   "| model.editing=", model.editing,
+          //   "| diff Date.now() - new_model.click_time: ",
+          //   Date.now(), "-", new_model.click_time, "=",
+          //   Date.now() - new_model.click_time);
+      }
+      else { // first click
+        new_model.clicked = data; // so we can check if same item clicked twice!
+        new_model.click_time = Date.now(); // timer to detect double-click 300ms
+        new_model.editing = false; // reset
+        // console.log('FIRST CLICK! data:', data);
+      }
+      break;
+    case 'SAVE':
+      var edit = document.getElementsByClassName('edit')[0];
+      var value = edit.value;
+      var id = parseInt(edit.id, 10);
+      // End Editing
+      new_model.clicked = false;
+      new_model.editing = false;
