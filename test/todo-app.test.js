@@ -523,3 +523,24 @@ test('5.5 CANCEL should cancel edits on escape', function (t) {
   localStorage.removeItem('todos-elmish_' + id);
   t.end();
 });
+test('6. Counter > should display the current number of todo items',
+  function (t) {
+  elmish.empty(document.getElementById(id));
+  const model = {
+    todos: [
+      { id: 0, title: "Make something people want.", done: false },
+      { id: 1, title: "Bootstrap for as long as you can", done: false },
+      { id: 2, title: "Let's solve our own problem", done: false }
+    ],
+    hash: '#/'
+  };
+  // render the view and append it to the DOM inside the `test-app` node:
+  elmish.mount(model, app.update, app.view, id, app.subscriptions);
+  // count:
+  const count = parseInt(document.getElementById('count').textContent, 10);
+  t.equal(count, model.todos.length, "displays todo item count: " + count);
+
+  elmish.empty(document.getElementById(id)); // clear DOM ready for next test
+  localStorage.removeItem('todos-elmish_' + id);
+  t.end();
+});
