@@ -404,3 +404,26 @@ test('5.1 Editing: > Render an item in "editing mode"', function (t) {
     "<input class='edit'> has value: " + model.todos[2].title);
   t.end();
 });
+test('5.2 Double-click an item <label> to edit it', function (t) {
+  elmish.empty(document.getElementById(id));
+  localStorage.removeItem('todos-elmish_' + id);
+  const model = {
+    todos: [
+      { id: 0, title: "Make something people want.", done: false },
+      { id: 1, title: "Let's solve our own problem", done: false }
+    ],
+    hash: '#/' // the "route" to display
+  };
+  // render the view and append it to the DOM inside the `test-app` node:
+  elmish.mount(model, app.update, app.view, id, app.subscriptions);
+  const label = document.querySelectorAll('.view > label')[1]
+  // "double-click" i.e. click the <label> twice in quick succession:
+  label.click();
+  label.click();
+  // confirm that we are now in editing mode:
+  t.equal(document.querySelectorAll('.editing').length, 1,
+    "<li class='editing'> element is visible");
+  t.equal(document.querySelectorAll('.edit')[0].value, model.todos[1].title,
+    "<input class='edit'> has value: " + model.todos[1].title);
+  t.end();
+});
